@@ -1,8 +1,13 @@
+# Archivos que NO se deben subir (ignorar)
+
+# Locales y sensibles
 *.log
 .DS_Store
 .env
 .env.backup
 .env.production
+
+# IDEs y editores
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -12,17 +17,28 @@
 /.vscode
 /.zed
 /auth.json
+
+# Dependencias y builds
 /node_modules
 /public/build
 /public/hot
-/public/storage
-/storage/*.key
-/storage/pail
+/vendor
+
+# Caché y temporales de Laravel
 /storage/framework/cache/data/*
 /storage/framework/sessions/*
 /storage/framework/testing/*
 /storage/framework/views/*
-/vendor
+/storage/*.key
+/storage/pail
+/bootstrap/cache/*
+/bootstrap/providers/*
+
+# Maquinas virtuales y Docker (secrets)
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Notas privadas
+# NOTAS.txt
+# credenciales.json
