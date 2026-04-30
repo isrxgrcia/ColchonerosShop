@@ -11,27 +11,27 @@ use Exception;
 
 class PedidoService
 {
-
+    // Función para finalizar la compra y crear el pedido
     public function procesarPedido(int $userId, string $shippingAddress, string $paymentMethod): Order
     {
-        // 1. Recuperamos los ítems del carrito de la base de datos
         $cartItems = ItemCarrito::where('usuario_id', $userId)->with('producto')->get();
 
+        // Si no hay nada en el carro, lanzamos error
         if ($cartItems->isEmpty()) {
             throw new Exception("El carrito está vacío. No se puede procesar el pedido.");
         }
 
-        // 2. Iniciamos la transacción para asegurar la integridad de los datos
+        // Usamos una transacción para que si algo falla, no se guarde nada a medias
         return DB::transaction(function () use ($userId, $shippingAddress, $paymentMethod, $cartItems) {
-
+            
             $totalAmount = 0;
 
-            // FASE 1: Validar stock y bloquear filas para evitar compras simultáneas (Race Conditions)
+            // Recorremos los productos para comprobar stock y calcular total
             foreach ($cartItems as $item) {
                 $stockRecord = Inventory::where('product_id', $item->producto_id)
-                    ->where('size', $item->talla)
-                    ->lockForUpdate()
-                    ->first();
+                                        ->where('size', $item->talla)
+                                        ->lockForUpdate()
+                                        ->first();
 
                 if (!$stockRecord) {
                     throw new Exception("El producto '{$item->producto->name}' ya no está disponible.");
@@ -44,36 +44,36 @@ class PedidoService
                 $totalAmount += ($item->producto->price * $item->cantidad);
             }
 
+            // Aplicamos descuento si existe el cupón en la sesión
             if (session()->has('codigo_descuento')) {
                 $totalAmount = $totalAmount - ($totalAmount * 0.10);
             }
 
-            // FASE 2: Crear la cabecera del pedido (Order)
+            // Creamos el registro del pedido
             $order = Order::create([
-                'user_id' => $userId,
-                'total_amount' => $totalAmount,
+                'user_id'          => $userId,
+                'total_amount'     => $totalAmount,
                 'shipping_address' => $shippingAddress,
-                'payment_method' => $paymentMethod,
-                'status' => 'pending'
+                'payment_method'   => $paymentMethod,
+                'status'           => 'pending'
             ]);
 
-            // FASE 3: Crear las líneas del pedido y descontar el inventario real
+            // Guardamos cada línea del pedido y restamos el stock
             foreach ($cartItems as $item) {
                 OrderItem::create([
-                    'order_id' => $order->id,
+                    'order_id'   => $order->id,
                     'product_id' => $item->producto_id,
-                    'size' => $item->talla,
-                    'quantity' => $item->cantidad,
+                    'size'       => $item->talla,
+                    'quantity'   => $item->cantidad,
                     'unit_price' => $item->producto->price
                 ]);
 
-                // Descontamos el stock de forma atómica
                 Inventory::where('product_id', $item->producto_id)
-                    ->where('size', $item->talla)
-                    ->decrement('stock_quantity', $item->cantidad);
+                         ->where('size', $item->talla)
+                         ->decrement('stock_quantity', $item->cantidad);
             }
 
-            // FASE 4: Limpiar el carrito del usuario tras el éxito
+            // Borramos el carrito de la base de datos una vez comprado
             ItemCarrito::where('usuario_id', $userId)->delete();
             session()->forget('codigo_descuento');
 
