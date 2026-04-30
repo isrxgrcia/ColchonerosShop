@@ -80,7 +80,3 @@ Una vez levantado, accede a: **http://localhost**
 ├── docker/             # Configuración Docker
 └── vendor/             # Dependencias de Composer
 ```
-
-## 📄 Licencia
-
-Este proyecto es para fines educativos.
