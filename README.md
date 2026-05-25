@@ -217,7 +217,6 @@ php artisan serve
 ├── routes/web.php                           # Todas las rutas web
 ├── compose.yaml                             # Docker Compose (Sail 8.5)
 ├── storage/app/public/products/             # Imágenes de productos (~370 archivos)
-└── AGENTS.md                                # Instrucciones para OpenCode
 ```
 
 ## 🌐 Rutas principales
