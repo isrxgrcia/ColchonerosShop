@@ -157,7 +157,7 @@
             {{-- Mostramos la imagen principal del producto desde el almacenamiento (storage) --}}
             <img
                 src="{{ asset('storage/products/' . $producto->image_primary) }}"
-                alt="{{ $producto->name }}"
+                alt="{{ $producto->name }} — {{ $producto->category->name ?? 'Producto' }} de Colchoneros Shop"
                 class="card-img"
                 loading="lazy"
                 decoding="async"

@@ -19,6 +19,7 @@
         position: absolute;
         inset: 0;
         background: url('{{ asset('images/el_legado_striped.jpg') }}') center center / cover no-repeat;
+        background-size: cover;
         filter: contrast(1) brightness(1);
         z-index: 1;
     }
@@ -112,8 +113,8 @@
 @endpush
 @section('contenido')
     {{-- Esta es la sección principal (Hero) de la página de inicio --}}
-    <div class="hero">
-        <div class="hero-bg"></div>
+    <div class="hero" role="img" aria-label="Fondo decorativo del Club Atlético de Madrid">
+        <div class="hero-bg" role="presentation"></div>
         <div class="hero-content">
         </div>
     </div>

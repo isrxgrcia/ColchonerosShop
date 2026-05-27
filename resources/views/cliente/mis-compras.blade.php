@@ -127,8 +127,8 @@
                                         <div style="font-size:0.9rem; color:#5d4037; font-style: italic;">Medida Seleccionada: {{ strtoupper($linea->size) }}</div>
                                     </td>
                                     <td style="text-align:center;">{{ $linea->quantity }}</td>
-                                    <td style="text-align:right;">{{ number_format($linea->unit_price, 2) }}€</td>
-                                    <td style="text-align:right; font-weight:700;">{{ number_format($linea->unit_price * $linea->quantity, 2) }}€</td>
+                                    <td style="text-align:right;">{{ number_format($linea->unit_price, 2, ',', '.') }}€</td>
+                                    <td style="text-align:right; font-weight:700;">{{ number_format($linea->unit_price * $linea->quantity, 2, ',', '.') }}€</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -136,11 +136,11 @@
                         <div style="width: 280px; margin-left: auto;">
                             <div style="display:flex; justify-content:space-between; font-size:1rem; padding:0.5rem 0; border-bottom: 1px dashed #3e2723;">
                                 <span>Base Imponible</span>
-                                <span>{{ number_format($pedido->total_amount / 1.21, 2) }}€</span>
+                                <span>{{ number_format($pedido->total_amount / 1.21, 2, ',', '.') }}€</span>
                             </div>
                             <div style="display:flex; justify-content:space-between; font-size:1rem; padding:0.5rem 0; border-bottom: 1px dashed #3e2723;">
                                 <span>Tasa IVA (21%)</span>
-                                <span>{{ number_format($pedido->total_amount - ($pedido->total_amount/1.21), 2) }}€</span>
+                                <span>{{ number_format($pedido->total_amount - ($pedido->total_amount/1.21), 2, ',', '.') }}€</span>
                             </div>
                             <div style="display:flex; justify-content:space-between; font-family:'Playfair Display', serif; font-size:1.5rem; font-weight:900; border-top:3px double #3e2723; padding-top:0.5rem;">
                                 <span>TOTAL FINAL</span>

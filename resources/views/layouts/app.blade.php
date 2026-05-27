@@ -52,31 +52,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            cursor: none;
-            position: relative;
-        }
-        .cursor-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--bronce);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 999999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s ease;
-        }
-        .cursor-dot-outline {
-            width: 30px;
-            height: 30px;
-            border: 1px solid var(--bronce);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 999999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.15s ease, width 0.3s, height 0.3s;
-            opacity: 0.5;
         }
         body::before {
             content: "";
@@ -116,28 +91,7 @@
             0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { color: inherit; opacity: 1; }
             20%, 22%, 24%, 55% { color: transparent; opacity: 0.5; }
         }
-        .cursor-dot {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: var(--blanco);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.04s linear;
-        }
-        .cursor-ring {
-            position: fixed;
-            width: 32px;
-            height: 32px;
-            border: 1px solid rgba(255,255,255,0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999998;
-            transform: translate(-50%, -50%);
-            transition: all 0.15s cubic-bezier(0.23, 1, 0.32, 1);
-        }
+
         .container {
             width: 95%;
             max-width: 1800px;
@@ -290,6 +244,37 @@
         .page-item.active .page-link { background: var(--acento); color: var(--fondo); }
         .page-item.disabled .page-link { color: var(--borde); cursor: not-allowed; opacity: 0.5; }
         [x-cloak] { display: none !important; }
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .btn-loading::after {
+            content: '';
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            margin-left: 0.5em;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .scanlines::before, .reveal, .marquee-track, .hero-bg, .hero-shield-bg {
+                animation: none !important;
+                transform: none !important;
+                opacity: 1 !important;
+            }
+        }
     </style>
     @stack('styles')
 </head>
@@ -305,28 +290,10 @@
 
     {{-- El pie de página también es un componente reutilizable --}}
     @include('components.footer')
-    <div class="cursor-dot"></div>
-    <div class="cursor-dot-outline"></div>
-    <script>
-        const dot = document.querySelector('.cursor-dot');
-        const outline = document.querySelector('.cursor-dot-outline');
-        window.addEventListener('mousemove', (e) => {
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            outline.style.left = e.clientX + 'px';
-            outline.style.top = e.clientY + 'px';
-        });
-        document.querySelectorAll('a, button').forEach(el => {
-            el.addEventListener('mouseenter', () => { outline.style.width = '50px'; outline.style.height = '50px'; });
-            el.addEventListener('mouseleave', () => { outline.style.width = '30px'; outline.style.height = '30px'; });
-        });
-    </script>
-    <div id="toast" class="toast">
-        <span class="toast-icon"></span>
+    <div id="toast" class="toast" role="alert" aria-live="polite">
+        <span class="toast-icon" aria-hidden="true"></span>
         <span class="toast-text">MENSAJE</span>
     </div>
-    <audio id="click-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
-    <audio id="slide-sound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio>
     <script>
         function getConfiguracionPeticion(metodo, cuerpo = null) {
             const token = document.querySelector('meta[name="csrf-token"]').content;
@@ -359,7 +326,6 @@
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || data.razon_concreta || 'ERROR AL AÑADIR');
                 mostrarNotificacion(data.notificacion || 'AÑADIDO AL CARRITO');
-                window.dispatchEvent(new CustomEvent('show-atleti-promo'));
                 const cartBadge = document.getElementById('cart-badge');
                 if (cartBadge) {
                     cartBadge.innerText = data.total_items;
@@ -371,13 +337,15 @@
                 mostrarNotificacion(err.message, 'error');
             }
         }
-        document.querySelectorAll('a, button, .modulo-link, .btn-save-stock').forEach(el => {
-            el.addEventListener('click', () => {
-                const snd = document.getElementById('click-sound');
-                if (snd) { snd.currentTime = 0; snd.play(); }
-            });
-        });
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function() {
+                    const btn = this.querySelector('button[type="submit"], .btn-pagar, .btn-submit, .btn-save');
+                    if (btn && !btn.classList.contains('btn-loading')) {
+                        btn.classList.add('btn-loading');
+                    }
+                });
+            });
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {

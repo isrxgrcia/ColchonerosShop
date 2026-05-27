@@ -391,7 +391,7 @@
                                            min="0" class="variante-input">
                                     <div class="stock-progress-bg" style="width: {{ min(100, $inv->stock_quantity * 2) }}%"></div>
                                 </div>
-                                <button type="submit" class="btn-save-stock" title="Guardar stock">
+                                <button type="submit" class="btn-save-stock" title="Guardar stock" onclick="return confirm('¿Guardar stock ' + this.form.querySelector('input[name=\'cantidad\']').value + ' unidades?')">
                                     @if($isSavedSim)
                                         <span style="color:var(--acento-secundario)">✓</span>
                                     @else
@@ -428,9 +428,6 @@ function actualizarRutaStock(event, form, inventoryId) {
     event.preventDefault();
     const cant = form.querySelector('input[name="cantidad"]').value;
     form.action = `{{ url('admin/stock') }}/${inventoryId}/${cant}`;
-    if (typeof playSlideSound === 'function') {
-        playSlideSound();
-    }
     setTimeout(() => {
         form.submit();
     }, 400);

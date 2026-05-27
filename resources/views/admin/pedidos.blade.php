@@ -180,7 +180,7 @@
                     </ul>
                 </td>
                 <td style="font-family: 'EB Garamond', serif; font-weight: 700; font-size: 1rem;">
-                    {{ number_format($pedido->total_amount ?? 0, 2) }}€
+                    {{ number_format($pedido->total_amount ?? 0, 2, ',', '.') }}€
                 </td>
                 <td>
                     <form method="POST" action=""
@@ -192,7 +192,7 @@
                                 <option value="{{ $st }}" {{ $pedido->status == $st ? 'selected' : '' }}>{{ strtoupper($st) }}</option>
                             @endforeach
                         </select>
-                        <button type="submit" class="btn" style="padding: 0.4rem 0.85rem; font-size: 0.7rem;">OK</button>
+                        <button type="submit" class="btn" style="padding: 0.4rem 0.85rem; font-size: 0.7rem;" onclick="return confirm('¿Cambiar estado del pedido #{{ $pedido->id }} a «' + this.form.querySelector('select[name=\'estado\']').value + '»?')">OK</button>
                     </form>
                 </td>
             </tr>

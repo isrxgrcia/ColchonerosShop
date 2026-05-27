@@ -207,7 +207,7 @@
                     @foreach($items_carrito as $item)
                         <div class="resumen-linea" style="margin-bottom: 1rem;">
                             <span style="font-style: italic;">{{ Str::limit($item->producto->name, 22) }}</span>
-                            <span style="font-weight: 700;">{{ number_format($item->producto->price * $item->cantidad, 2) }}€</span>
+                            <span style="font-weight: 700;">{{ number_format($item->producto->price * $item->cantidad, 2, ',', '.') }}€</span>
                         </div>
                     @endforeach
                     @if($descuento > 0)

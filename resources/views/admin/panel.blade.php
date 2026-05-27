@@ -304,7 +304,7 @@
                     <div style="font-size: 0.7rem; color: var(--texto-secundario);">{{ $pedido->user->email ?? '' }}</div>
                 </td>
                 <td style="font-family:  'EB Garamond'; font-weight: 700; font-size: 1.1rem;">
-                    {{ number_format($pedido->total_price ?? $pedido->total_amount ?? 0, 2) }}€
+                    {{ number_format($pedido->total_price ?? $pedido->total_amount ?? 0, 2, ',', '.') }}€
                 </td>
                 <td>
                     <span class="status-badge status-{{ $pedido->status }}">{{ $pedido->status }}</span>

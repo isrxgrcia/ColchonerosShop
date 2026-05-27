@@ -1,27 +1,20 @@
 @php
-    /* Lógica en PHP para decidir si mostramos la promo. 
-       Por ejemplo, solo se muestra si el usuario no tiene pedidos previos. */
-    $mostrarPromo = true;
-    if (auth()->check()) {
-        $mostrarPromo = !\App\Models\Order::where('user_id', auth()->id())->exists();
-    }
+    $mostrarPromo = !session('promo_visto') && auth()->check() && !\App\Models\Order::where('user_id', auth()->id())->exists();
 @endphp
 @if($mostrarPromo)
-{{-- Usamos Alpine.js (x-data) para controlar la visibilidad del modal en el cliente --}}
 <div x-data="{ showPromo: false }"
-     {{-- Escuchamos un evento global para activar el modal con un pequeño retraso --}}
-     x-on:show-atleti-promo.window="setTimeout(() => { showPromo = true }, 500)"
+     x-init="$nextTick(() => { if (!sessionStorage.getItem('promo_visto')) { setTimeout(() => { showPromo = true; sessionStorage.setItem('promo_visto', '1'); }, 3000); }})"
      x-show="showPromo"
      x-cloak
      class="promo-overlay"
 >
     <div class="promo-card-vintage" @click.away="showPromo = false">
         {{-- Botón para cerrar el modal cambiando la variable de Alpine.js a false --}}
-        <button @click="showPromo = false" class="close-btn-vintage">✕</button>
+        <button @click="showPromo = false" class="close-btn-vintage" aria-label="Cerrar ventana promocional">✕</button>
         <div class="promo-grid">
             <div class="promo-image-wall">
                 <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&q=80&w=1000"
-                     alt="Afición Atleti"
+                     alt="Afición del Club Atlético de Madrid animando en el estadio"
                      onerror="this.src='https://placehold.co/800x600/111/444?text=FORZA+ATLETI'">
                 <div class="promo-sepia-overlay"></div>
             </div>
