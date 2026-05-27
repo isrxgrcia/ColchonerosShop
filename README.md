@@ -159,7 +159,7 @@ php artisan serve
 │   └── components/                           # navbar, footer, product-card, etc.
 ├── routes/web.php                           # Todas las rutas web
 ├── compose.yaml                             # Docker Compose (Sail 8.5)
-├── storage/app/public/products/             # Imágenes de productos (~328 archivos)
+├── storage/app/public/products/             # Imágenes de productos (~328 archivos PNG)
 └── AGENTS.md                                # Instrucciones para OpenCode
 ```
 
