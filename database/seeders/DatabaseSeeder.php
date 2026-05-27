@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $this->call([
-            AndroidDataSeeder::class,
+            WebDataSeeder::class,
         ]);
     }
 }
